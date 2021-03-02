@@ -16,6 +16,8 @@ namespace BigMission.CanTools.ChannelManagement
         private readonly Dictionary<int, ChannelInstance> channels = new Dictionary<int, ChannelInstance>();
         private readonly Dictionary<uint, CanInstance> canValues = new Dictionary<uint, CanInstance>();
         private Timer broadcastTimer;
+        private const int CHANNEL_TIMEOUT = 10000;
+        private Timer timeoutTimer;
 
         private ICanBus canBus;
         private object canBusLock = new object();
@@ -104,7 +106,8 @@ namespace BigMission.CanTools.ChannelManagement
         {
             if (broadcastTimer != null) { throw new InvalidOperationException(); }
 
-            broadcastTimer = new Timer(BroadcastCallback, null, 3000, 100);
+            broadcastTimer = new Timer(BroadcastCallback, null, 500, 100);
+            timeoutTimer = new Timer(TimeoutCallback, null, 3000, CHANNEL_TIMEOUT);
         }
 
         private void BroadcastCallback(object o)
@@ -170,6 +173,38 @@ namespace BigMission.CanTools.ChannelManagement
             catch (Exception ex)
             {
                 Logger.Error(ex, "Error sending can broadcast.");
+            }
+        }
+
+        private void TimeoutCallback(object o)
+        {
+            try
+            {
+                var timeoutChannels = new List<ChannelStatusDto>();
+                var now = DateTime.UtcNow;
+                var ts = TimeSpan.FromMilliseconds(CHANNEL_TIMEOUT);
+                lock (channels)
+                {
+                    foreach(var ch in channels)
+                    {
+                        if ((now - ch.Value.Status?.Timestamp) > ts)
+                        {
+                            ch.Value.Status.Value = 0;
+                            timeoutChannels.Add(ch.Value.Status);
+                            Logger.Trace($"Timeout on channel {ch.Value.Mapping.ChannelName}. Reset to 0.");
+                        }
+                    }
+                }
+
+                if (timeoutChannels.Any())
+                {
+                    var ds = new ChannelDataSetDto { Data = timeoutChannels.ToArray() };
+                    UpdateValues(ds);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex, "Error checking for channel timeouts.");
             }
         }
 
