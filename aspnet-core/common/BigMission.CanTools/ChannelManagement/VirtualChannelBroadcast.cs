@@ -20,7 +20,7 @@ namespace BigMission.CanTools.ChannelManagement
         private Timer timeoutTimer;
 
         private ICanBus canBus;
-        private object canBusLock = new object();
+        private readonly object canBusLock = new object();
         public ICanBus CanBus
         {
             get
@@ -82,6 +82,9 @@ namespace BigMission.CanTools.ChannelManagement
                     if (channels.TryGetValue(d.ChannelId, out ChannelInstance ci))
                     {
                         ci.Status = d;
+                        // Reset the timestamp of newly received status to the in-car device's time to avoid 
+                        // premature timeout of the data.  In effect, assume that if we received it, it is good.
+                        ci.Status.Timestamp = DateTime.UtcNow;
                         chInstances.Add(ci);
                     }
                 }
