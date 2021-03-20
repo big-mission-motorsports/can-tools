@@ -22,10 +22,6 @@ namespace BigMission.CanTools.ChannelManagement
                     var exists = channels.TryGetValue(newVal.ChannelId, out ChannelStatusDto oldVal);
                     if (!exists || (exists && oldVal.Value != newVal.Value))
                     {
-                        if (newVal.ChannelId == 88 && newVal.Value > 30)
-                        {
-                            System.Diagnostics.Debugger.Break();
-                        }
                         channels[newVal.ChannelId] = newVal;
                         dirtyChannels.Add(newVal.ChannelId);
                     }
