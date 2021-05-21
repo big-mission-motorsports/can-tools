@@ -55,6 +55,7 @@ namespace BigMission.CanTools.SerialCan
 
                 var buff = responseBuffer.ToString();
                 var lines = buff.Split('\r').ToList();
+                responseBuffer.Clear();
 
                 if (lines.Count > 1)
                 {
@@ -63,7 +64,6 @@ namespace BigMission.CanTools.SerialCan
                     // Check for incomplete content and retain for next response
                     if (!string.IsNullOrEmpty(last))
                     {
-                        responseBuffer.Clear();
                         responseBuffer.Append(last);
                     }
                     lines.RemoveAt(lines.Count - 1);
@@ -82,7 +82,7 @@ namespace BigMission.CanTools.SerialCan
 
         private static CanMessage Parse(string line)
         {
-            // Make sure there is sufficent conetnt to be valid before bothering
+            // Make sure there is sufficent content to be valid before bothering
             if (line.Length < 6)
                 return null;
 
@@ -92,6 +92,9 @@ namespace BigMission.CanTools.SerialCan
             // Get the message ID
             if (line[0] == 'T')
             {
+                if (line.Length < 9)
+                    return null;
+
                 cm.IdLength = IdLength._29bit;
                 l = l[1..];
                 cm.CanId = uint.Parse(l[0..8], System.Globalization.NumberStyles.HexNumber);
@@ -111,6 +114,9 @@ namespace BigMission.CanTools.SerialCan
             }
 
             // Data length
+            if (l.Length < 1)
+                return null;
+
             cm.DataLength = int.Parse(l[0].ToString());
             l = l[1..];
 
@@ -118,6 +124,9 @@ namespace BigMission.CanTools.SerialCan
             var bytes = new List<byte>();
             for (int i = 0; i < cm.DataLength; i++)
             {
+                if (l.Length < 2)
+                    return null;
+
                 var b = byte.Parse(l[0..2], System.Globalization.NumberStyles.HexNumber);
                 bytes.Add(b);
                 l = l[2..];
