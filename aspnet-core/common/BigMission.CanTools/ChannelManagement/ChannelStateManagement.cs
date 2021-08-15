@@ -46,7 +46,7 @@ namespace BigMission.CanTools.ChannelManagement
             return cvl.ToArray();
         }
 
-        public ChannelStatusDto[] GetChannelValues()
+        public ChannelStatusDto[] ClaimAllChannel()
         {
             ChannelStatusDto[] values;
             lock (this)
