@@ -1,6 +1,7 @@
 ﻿using BigMission.CanTools.PiCan;
 using NLog;
 using System;
+using System.Threading.Tasks;
 
 namespace BigMission.CanTools.TestCan
 {
@@ -9,6 +10,8 @@ namespace BigMission.CanTools.TestCan
         public event Action<CanMessage> Received;
         private readonly PiCanMessageParser canParser;
         private ILogger Logger { get; }
+
+        public bool IsOpen => throw new NotImplementedException();
 
         public TestCanInterface(ILogger logger)
         {
@@ -27,9 +30,10 @@ namespace BigMission.CanTools.TestCan
             return 0;
         }
 
-        public void Send(CanMessage message)
+        public Task SendAsync(CanMessage message)
         {
             Logger.Info("Sent test can interface");
+            return Task.CompletedTask;
         }
 
 

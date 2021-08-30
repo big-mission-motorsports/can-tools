@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace BigMission.CanTools.SerialCan
 {
@@ -19,7 +20,8 @@ namespace BigMission.CanTools.SerialCan
         private SerialPort serialPort;
         public event Action<CanMessage> Received;
         private ILogger Logger { get; }
-        private StringBuilder responseBuffer = new StringBuilder();
+        private readonly StringBuilder responseBuffer = new StringBuilder();
+        public bool IsOpen { get; private set; }
 
 
         public CanInterfaceSerial(ILogger logger)
@@ -37,6 +39,7 @@ namespace BigMission.CanTools.SerialCan
                 serialPort.DataReceived += SerialPort_DataReceived;
                 serialPort.Write($"S{(int)speed}\r");
                 serialPort.Write("O\r");
+                IsOpen = true;
                 return 0;
             }
             else
@@ -151,10 +154,11 @@ namespace BigMission.CanTools.SerialCan
                 serialPort.Write("C\r");
                 serialPort.Close();
                 serialPort.Dispose();
+                IsOpen = false;
             }
         }
 
-        public void Send(CanMessage cm)
+        public Task SendAsync(CanMessage cm)
         {
             var idstr = cm.CanId.ToString("X");
             var idTotalLen = 3;
@@ -179,6 +183,8 @@ namespace BigMission.CanTools.SerialCan
                 Logger.Trace("TX:" + message);
                 serialPort.Write(message);
             }
+
+            return Task.CompletedTask;
         }
 
     }

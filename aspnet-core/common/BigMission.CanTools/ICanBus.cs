@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace BigMission.CanTools
 {
@@ -7,6 +8,8 @@ namespace BigMission.CanTools
     /// </summary>
     public interface ICanBus
     {
+        bool IsOpen { get; }
+
         /// <summary>
         /// Connects to CAN bus and starts listening.
         /// </summary>
@@ -24,7 +27,7 @@ namespace BigMission.CanTools
         /// Send a message on the CAN bus.
         /// </summary>
         /// <param name="message"></param>
-        void Send(CanMessage message);
+        Task SendAsync(CanMessage message);
 
         void Close();
     }

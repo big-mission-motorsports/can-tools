@@ -8,7 +8,7 @@ namespace BigMission.CanTools.ChannelManagement
     /// Keeps track of changes to channel values.  This is used
     /// for change tracking and sending only changed values.
     /// </summary>
-    public class ChannelStateManagement
+    public class ChannelStateManagement : IChannelStateManagement
     {
         private readonly Dictionary<int, ChannelStatusDto> channels = new Dictionary<int, ChannelStatusDto>();
         private readonly HashSet<int> dirtyChannels = new HashSet<int>();

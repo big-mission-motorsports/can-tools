@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace BigMission.CanTools.PiCan
 {
@@ -31,7 +32,7 @@ namespace BigMission.CanTools.PiCan
                     Arguments = args,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
-                    CreateNoWindow = true, 
+                    CreateNoWindow = true,
                 }
             };
             Logger.Info(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
@@ -52,7 +53,7 @@ namespace BigMission.CanTools.PiCan
         /// </summary>
         /// <param name="cmd"></param>
         /// <param name="args"></param>
-        public void RunInst(string cmd, string args = "")
+        public async Task RunInstAsync(string cmd, string args = "")
         {
             var process = new Process
             {
@@ -66,7 +67,7 @@ namespace BigMission.CanTools.PiCan
                 }
             };
             //Logger.Trace(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-            process.Start();
+            await new Task(() => { process.Start(); });
         }
 
         public void Dispose()

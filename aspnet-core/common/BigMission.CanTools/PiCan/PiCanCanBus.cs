@@ -2,6 +2,7 @@
 using NLog;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace BigMission.CanTools.PiCan
 {
@@ -18,6 +19,7 @@ namespace BigMission.CanTools.PiCan
         private readonly string sendCmd;
         private readonly PiCanMessageParser canParser;
         private Thread receiveThread;
+        public bool IsOpen { get; private set; }
 
 
         public PiCanCanBus(ILogger logger, CanAppConfigDto config)
@@ -33,17 +35,17 @@ namespace BigMission.CanTools.PiCan
         {
             // Run a shell interface to pican tools
             shell = new ShellCommand(Logger);
-            
+
             Close();
             Thread.Sleep(1000);
             LinkUp();
 
             Logger.Debug($"CAN link started");
-            
+
             shell.ReceivedOutput += CanShell_ReceivedOutput;
             receiveThread = new Thread(DoReceive) { IsBackground = true };
             receiveThread.Start();
-
+            IsOpen = true;
             Logger.Debug($"Completed pican initialization.");
             return 0;
         }
@@ -55,7 +57,7 @@ namespace BigMission.CanTools.PiCan
                 Logger.Debug($"Starting pican candump...");
                 shell.Run(Config.CanCmd, Config.CanArg);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.Error(ex, "Error receiving candump output");
             }
@@ -77,13 +79,13 @@ namespace BigMission.CanTools.PiCan
             }
         }
 
-        public void Send(CanMessage message)
+        public async Task SendAsync(CanMessage message)
         {
             var canIdStr = CanUtilities.InferCanIdString(message.CanId);
             var dataStr = CanUtilities.ConvertExactString(message.Data, message.DataLength);
 
             var arg = $"{Config.CanArg} {canIdStr}#{dataStr}";
-            shell.RunInst(sendCmd, arg);
+            await shell.RunInstAsync(sendCmd, arg);
             Logger.Trace($"TX: {arg}");
         }
 
@@ -117,6 +119,8 @@ namespace BigMission.CanTools.PiCan
                     receiveThread.Abort();
                     receiveThread = null;
                 }
+
+                IsOpen = false;
             }
             catch (Exception ex)
             {
