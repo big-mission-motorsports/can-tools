@@ -14,19 +14,23 @@ namespace BigMission.CanTools.PiCan
     {
         public event Action<CanMessage> Received;
         private ILogger Logger { get; }
-        private CanAppConfigDto Config { get; }
         private ShellCommand shell;
         private readonly string sendCmd;
         private readonly PiCanMessageParser canParser;
         private Thread receiveThread;
         public bool IsOpen { get; private set; }
+        private readonly string cmd;
+        private readonly string arg;
+        private readonly string bitrate;
 
 
-        public PiCanCanBus(ILogger logger, CanAppConfigDto config)
+        public PiCanCanBus(ILogger logger, string cmd, string arg, string bitrate)
         {
             Logger = logger;
-            Config = config;
-            sendCmd = Config.CanCmd.Replace("candump", "cansend");
+            this.cmd = cmd;
+            this.arg = arg;
+            this.bitrate = bitrate;
+            sendCmd = cmd.Replace("candump", "cansend");
             canParser = new PiCanMessageParser(Logger);
         }
 
@@ -55,7 +59,7 @@ namespace BigMission.CanTools.PiCan
             try
             {
                 Logger.Debug($"Starting pican candump...");
-                shell.Run(Config.CanCmd, Config.CanArg);
+                shell.Run(cmd, arg);
             }
             catch (Exception ex)
             {
@@ -84,7 +88,7 @@ namespace BigMission.CanTools.PiCan
             var canIdStr = CanUtilities.InferCanIdString(message.CanId);
             var dataStr = CanUtilities.ConvertExactString(message.Data, message.DataLength);
 
-            var arg = $"{Config.CanArg} {canIdStr}#{dataStr}";
+            var arg = $"{this.arg} {canIdStr}#{dataStr}";
             await shell.RunInstAsync(sendCmd, arg);
             Logger.Trace($"TX: {arg}");
         }
@@ -95,9 +99,9 @@ namespace BigMission.CanTools.PiCan
             try
             {
                 Logger.Debug("Turning link up");
-                var speed = CanUtilities.ParseSpeed(Config.CanBitrate);
-                Logger.Debug($"Start up CAN link: {speed}/{Config.CanBitrate}...");
-                cmd.Run("sudo", $"/sbin/ip link set {Config.CanArg} up type can bitrate {Config.CanBitrate}");
+                var speed = CanUtilities.ParseSpeed(bitrate);
+                Logger.Debug($"Start up CAN link: {speed}/{bitrate}...");
+                cmd.Run("sudo", $"/sbin/ip link set {arg} up type can bitrate {bitrate}");
             }
             catch (Exception ex)
             {
@@ -111,7 +115,7 @@ namespace BigMission.CanTools.PiCan
             try
             {
                 Logger.Debug("Turning off can link");
-                cmd.Run("sudo", $"/sbin/ip link set {Config.CanArg} down");
+                cmd.Run("sudo", $"/sbin/ip link set {arg} down");
 
                 if (receiveThread != null)
                 {

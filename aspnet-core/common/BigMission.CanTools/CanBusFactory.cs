@@ -1,6 +1,5 @@
 ﻿using BigMission.CanTools.PiCan;
 using BigMission.CanTools.SerialCan;
-using BigMission.DeviceApp.Shared;
 using NLog;
 using System.IO;
 
@@ -11,28 +10,28 @@ namespace BigMission.CanTools
     /// </summary>
     public class CanBusFactory
     {
-        public static ICanBus CreateCanBus(CanAppConfigDto config, ILogger logger)
+        public static ICanBus CreateCanBus(string cmd, string arg, string bitrate, ILogger logger)
         {
-            var speed = CanUtilities.ParseSpeed(config.CanBitrate);
+            var speed = CanUtilities.ParseSpeed(bitrate);
             ICanBus canBus;
             // Try pican
-            if (File.Exists(config.CanCmd))
+            if (File.Exists(cmd))
             {
-                logger.Trace($"File exists: ${config.CanCmd}");
-                canBus = new PiCanCanBus(logger, config);
-                canBus.Open(config.CanArg, speed);
+                logger.Trace($"File exists: ${cmd}");
+                canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
+                canBus.Open(arg, speed);
             }
             else // Try serial port
             {
-                logger.Trace($"Could not find file: ${config.CanCmd}. Trying serial driver...");
+                logger.Trace($"Could not find file: ${cmd}. Trying serial driver...");
                 canBus = new CanInterfaceSerial(logger);
                 var result = canBus.Open("COM3", speed);
                 if (result != 0)
                 {
                     logger.Trace($"Serial driver failed. Reverting to pican.");
                     // Revert to the pi can when serial interface isn't working
-                    canBus = new PiCanCanBus(logger, config);
-                    canBus.Open(config.CanArg, speed);
+                    canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
+                    canBus.Open(arg, speed);
                 }
             }
 
