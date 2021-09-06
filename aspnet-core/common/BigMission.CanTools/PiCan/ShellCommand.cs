@@ -67,7 +67,17 @@ namespace BigMission.CanTools.PiCan
                 }
             };
             //Logger.Trace(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
-            await new Task(() => { process.Start(); });
+            await Task.Run(() => { 
+                try
+                { 
+                    process.Start(); 
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex, "Error sending CAN message");
+                }
+            });
+            //await new Task(() => { process.Start(); });
         }
 
         public void Dispose()
