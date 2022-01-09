@@ -33,7 +33,16 @@ namespace BigMission.CanTools.SerialCan
         public int Open(string driverInterface, CanSpeed speed)
         {
             serialPort = new SerialPort(driverInterface, COM_SPEED);
-            serialPort.Open();
+            try
+            {
+                serialPort.Open();
+            }
+            catch (System.IO.IOException ex)
+            {
+                Logger.Warn(ex, "Unable to connect to CAN over COMM port");
+                return -1;
+            }
+
             if (serialPort.IsOpen)
             {
                 serialPort.DataReceived += SerialPort_DataReceived;
