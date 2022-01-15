@@ -12,71 +12,71 @@ namespace BigMission.CanTools
         public const uint MAX_11_BIT_ID = 0b111_1111_1111;
         public const uint MAX_29_BIT_ID = 0b1_1111_1111_1111_1111_1111_1111_1111;
 
-        public static float Decode(ulong data, ChannelMappingDto map)
-        {
-            var value = ExtractValue(data, map);
-            value = (float)RunFormula(value, map);
-            value = (float)ChannelConversion.Convert(value, map.Conversion);
-            return value;
-        }
+        //public static float Decode(ulong data, ChannelMappingDto map)
+        //{
+        //    var value = ExtractValue(data, map);
+        //    value = (float)RunFormula(value, map);
+        //    value = (float)ChannelConversion.Convert(value, map.Conversion);
+        //    return value;
+        //}
 
-        private static float ExtractValue(ulong data, ChannelMappingDto map)
-        {
-            // Swap to default to Little Endian from source.  This will move the values 
-            // opposite of what's represented visually in AIM but keep the offsets the same for bit shifting. 
-            data = Swap(data);
+        //private static float ExtractValue(ulong data, ChannelMappingDto map)
+        //{
+        //    // Swap to default to Little Endian from source.  This will move the values 
+        //    // opposite of what's represented visually in AIM but keep the offsets the same for bit shifting. 
+        //    data = Swap(data);
 
-            // Pull out the individual value
-            ulong clearMask = ~0UL >> ((8 - map.Length) * 8);
-            clearMask <<= map.Offset * 8;
-            ulong maskedData = (data & clearMask) >> (map.Offset * 8);
+        //    // Pull out the individual value
+        //    ulong clearMask = ~0UL >> ((8 - map.Length) * 8);
+        //    clearMask <<= map.Offset * 8;
+        //    ulong maskedData = (data & clearMask) >> (map.Offset * 8);
 
-            // Byte swap if needed
-            if (!map.IsBigEndian)
-            {
-                maskedData = Swap(maskedData);
-            }
+        //    // Byte swap if needed
+        //    if (!map.IsBigEndian)
+        //    {
+        //        maskedData = Swap(maskedData);
+        //    }
 
-            // Resolve Type
-            var buff = BitConverter.GetBytes(maskedData);
-            if (map.SourceType == ChannelSourceType.UNSIGNED)
-            {
-                return maskedData;
-            }
-            else if (map.SourceType == ChannelSourceType.SIGNED)
-            {
-                if (map.Length == 1)
-                {
-                    throw new NotImplementedException();
-                }
-                else if (map.Length == 2)
-                {
-                    return BitConverter.ToInt16(buff, 0);
-                }
-                else if (map.Length == 3)
-                {
-                    throw new NotImplementedException();
-                }
-                else if (map.Length == 4)
-                {
-                    return BitConverter.ToInt32(buff, 0);
-                }
-            }
-            else if (map.SourceType == ChannelSourceType.FLOAT)
-            {
-                return BitConverter.ToSingle(buff, 0);
-            }
-            else if (map.SourceType == ChannelSourceType.SIGN_MAGNITUDE)
-            {
-                // Ref autosport code:
-                // sign-magnitude is used in cases where there's a sign bit
-                // and an absolute value indicating magnitude.
-                // e.g. BMW E46 steering angle sensor
-                uint sign = ((uint)1) << (map.Length - 1);
-                return maskedData < sign ? maskedData : -(float)(maskedData & (sign - 1));
-            }
-            return 0.0f;
-        }
+        //    // Resolve Type
+        //    var buff = BitConverter.GetBytes(maskedData);
+        //    if (map.SourceType == ChannelSourceType.UNSIGNED)
+        //    {
+        //        return maskedData;
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.SIGNED)
+        //    {
+        //        if (map.Length == 1)
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //        else if (map.Length == 2)
+        //        {
+        //            return BitConverter.ToInt16(buff, 0);
+        //        }
+        //        else if (map.Length == 3)
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //        else if (map.Length == 4)
+        //        {
+        //            return BitConverter.ToInt32(buff, 0);
+        //        }
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.FLOAT)
+        //    {
+        //        return BitConverter.ToSingle(buff, 0);
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.SIGN_MAGNITUDE)
+        //    {
+        //        // Ref autosport code:
+        //        // sign-magnitude is used in cases where there's a sign bit
+        //        // and an absolute value indicating magnitude.
+        //        // e.g. BMW E46 steering angle sensor
+        //        uint sign = ((uint)1) << (map.Length - 1);
+        //        return maskedData < sign ? maskedData : -(float)(maskedData & (sign - 1));
+        //    }
+        //    return 0.0f;
+        //}
 
 
         public static ulong Swap(ulong val)
@@ -87,90 +87,90 @@ namespace BigMission.CanTools
                    (val & 0x00FF000000000000UL) >> 40 | (val & 0xFF00000000000000UL) >> 56;
         }
 
-        public static double RunFormula(double value, ChannelMappingDto mapping)
-        {
-            value *= mapping.FormulaMultipler;
-            if (mapping.FormulaDivider != 0)
-                value /= mapping.FormulaDivider;
-            value += mapping.FormulaConst;
-            return value;
-        }
+        //public static double RunFormula(double value, ChannelMappingDto mapping)
+        //{
+        //    value *= mapping.FormulaMultipler;
+        //    if (mapping.FormulaDivider != 0)
+        //        value /= mapping.FormulaDivider;
+        //    value += mapping.FormulaConst;
+        //    return value;
+        //}
 
-        public static ulong Encode(ulong data, float value, ChannelMappingDto map)
-        {
-            value = (float)RunFormula(value, map);
+        //public static ulong Encode(ulong data, float value, ChannelMappingDto map)
+        //{
+        //    value = (float)RunFormula(value, map);
 
-            byte[] repBytes = null;
-            if (map.SourceType == ChannelSourceType.UNSIGNED)
-            {
-                if (map.Length == 1)
-                {
-                    repBytes = BitConverter.GetBytes((byte)value);
-                }
-                else if (map.Length == 2)
-                {
-                    repBytes = BitConverter.GetBytes((ushort)value);
-                }
-                else if (map.Length == 3)
-                {
-                    repBytes = BitConverter.GetBytes((uint)value);
-                }
-                else if (map.Length == 4)
-                {
-                    repBytes = BitConverter.GetBytes((uint)value);
-                }
-            }
-            else if (map.SourceType == ChannelSourceType.SIGNED)
-            {
-                if (map.Length == 1)
-                {
-                    repBytes = BitConverter.GetBytes((sbyte)value);
-                }
-                else if (map.Length == 2)
-                {
-                    repBytes = BitConverter.GetBytes((short)value);
-                }
-                else if (map.Length == 3)
-                {
-                    throw new NotImplementedException();
-                }
-                else if (map.Length == 4)
-                {
-                    repBytes = BitConverter.GetBytes((int)value);
-                }
-            }
-            else if (map.SourceType == ChannelSourceType.FLOAT)
-            {
-                repBytes = BitConverter.GetBytes(value);
-                if (map.Length != 4)
-                {
-                    throw new InvalidOperationException("Floating point represenation must be 4 bytes long.");
-                }
-            }
-            else if (map.SourceType == ChannelSourceType.SIGN_MAGNITUDE)
-            {
-                throw new NotImplementedException();
-            }
+        //    byte[] repBytes = null;
+        //    if (map.SourceType == ChannelSourceType.UNSIGNED)
+        //    {
+        //        if (map.Length == 1)
+        //        {
+        //            repBytes = BitConverter.GetBytes((byte)value);
+        //        }
+        //        else if (map.Length == 2)
+        //        {
+        //            repBytes = BitConverter.GetBytes((ushort)value);
+        //        }
+        //        else if (map.Length == 3)
+        //        {
+        //            repBytes = BitConverter.GetBytes((uint)value);
+        //        }
+        //        else if (map.Length == 4)
+        //        {
+        //            repBytes = BitConverter.GetBytes((uint)value);
+        //        }
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.SIGNED)
+        //    {
+        //        if (map.Length == 1)
+        //        {
+        //            repBytes = BitConverter.GetBytes((sbyte)value);
+        //        }
+        //        else if (map.Length == 2)
+        //        {
+        //            repBytes = BitConverter.GetBytes((short)value);
+        //        }
+        //        else if (map.Length == 3)
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //        else if (map.Length == 4)
+        //        {
+        //            repBytes = BitConverter.GetBytes((int)value);
+        //        }
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.FLOAT)
+        //    {
+        //        repBytes = BitConverter.GetBytes(value);
+        //        if (map.Length != 4)
+        //        {
+        //            throw new InvalidOperationException("Floating point represenation must be 4 bytes long.");
+        //        }
+        //    }
+        //    else if (map.SourceType == ChannelSourceType.SIGN_MAGNITUDE)
+        //    {
+        //        throw new NotImplementedException();
+        //    }
 
-            // Pad size to ensure lenght of 8 for ToUInt64
-            byte[] buff = new byte[8];
-            for (int i = 0; i < repBytes.Length; i++)
-            {
-                buff[i] = repBytes[i];
-            }
+        //    // Pad size to ensure lenght of 8 for ToUInt64
+        //    byte[] buff = new byte[8];
+        //    for (int i = 0; i < repBytes.Length; i++)
+        //    {
+        //        buff[i] = repBytes[i];
+        //    }
 
-            ulong repLong = BitConverter.ToUInt64(buff);
-            ulong clearMask = ~0UL >> ((8 - map.Length) * 8);
-            clearMask <<= map.Offset * 8;
-            data &= ~clearMask;
-            data |= repLong << (map.Offset * 8);
+        //    ulong repLong = BitConverter.ToUInt64(buff);
+        //    ulong clearMask = ~0UL >> ((8 - map.Length) * 8);
+        //    clearMask <<= map.Offset * 8;
+        //    data &= ~clearMask;
+        //    data |= repLong << (map.Offset * 8);
 
-            //// Swap to default to Little Endian from source.  This will move the values 
-            //// opposite of what's represented visually in AIM but keep the offsets the same for bit shifting. 
-            //data = Swap(data);
+        //    //// Swap to default to Little Endian from source.  This will move the values 
+        //    //// opposite of what's represented visually in AIM but keep the offsets the same for bit shifting. 
+        //    //data = Swap(data);
 
-            return data;
-        }
+        //    return data;
+        //}
 
         public static string InferCanIdString(uint id)
         {
