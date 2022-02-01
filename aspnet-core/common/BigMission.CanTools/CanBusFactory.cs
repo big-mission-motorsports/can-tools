@@ -1,6 +1,7 @@
 ﻿using BigMission.CanTools.PiCan;
 using BigMission.CanTools.SerialCan;
 using NLog;
+using System;
 using System.IO;
 
 namespace BigMission.CanTools
@@ -25,13 +26,20 @@ namespace BigMission.CanTools
             {
                 logger.Trace($"Could not find file: ${cmd}. Trying serial driver...");
                 canBus = new CanInterfaceSerial(logger);
-                var result = canBus.Open("COM3", speed);
-                if (result != 0)
+                try
                 {
-                    logger.Trace($"Serial driver failed. Reverting to pican.");
-                    // Revert to the pi can when serial interface isn't working
-                    canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
-                    canBus.Open(arg, speed);
+                    var result = canBus.Open("COM3", speed);
+                    if (result != 0)
+                    {
+                        logger.Trace($"Serial driver failed. Reverting to pican.");
+                        // Revert to the pi can when serial interface isn't working
+                        canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
+                        canBus.Open(arg, speed);
+                    }
+                }
+                catch (UnauthorizedAccessException uae)
+                {
+                    logger.Error(uae, "Cannot open COM port.");
                 }
             }
 
