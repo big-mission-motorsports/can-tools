@@ -2,7 +2,7 @@
 using BigMission.CanTools.SerialCan;
 using NLog;
 using System;
-using System.IO;
+using System.Runtime.InteropServices;
 
 namespace BigMission.CanTools
 {
@@ -15,14 +15,15 @@ namespace BigMission.CanTools
         {
             var speed = CanUtilities.ParseSpeed(bitrate);
             ICanBus canBus;
-            // Try pican
-            if (File.Exists(cmd))
+            // Use pican on linux
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
                 logger.Trace($"File exists: ${cmd}");
                 canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
                 canBus.Open(arg, speed);
             }
-            else // Try serial port
+            // Use serial port on windows
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 logger.Trace($"Could not find file: ${cmd}. Trying serial driver...");
                 canBus = new CanInterfaceSerial(logger);
@@ -41,6 +42,10 @@ namespace BigMission.CanTools
                 {
                     logger.Error(uae, "Cannot open COM port.");
                 }
+            }
+            else
+            {
+                throw new NotImplementedException("OS Platform not supported.");
             }
 
             return canBus;
