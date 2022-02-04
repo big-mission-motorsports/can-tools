@@ -30,13 +30,13 @@ namespace BigMission.CanTools
                 try
                 {
                     var result = canBus.Open("COM3", speed);
-                    if (result != 0)
-                    {
-                        logger.Trace($"Serial driver failed. Reverting to pican.");
-                        // Revert to the pi can when serial interface isn't working
-                        canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
-                        canBus.Open(arg, speed);
-                    }
+                    //if (result != 0)
+                    //{
+                    //    logger.Trace($"Serial driver failed. Reverting to pican.");
+                        //// Revert to the pi can when serial interface isn't working
+                        //canBus = new PiCanCanBus(logger, cmd, arg, bitrate);
+                        //canBus.Open(arg, speed);
+                    //}
                 }
                 catch (UnauthorizedAccessException uae)
                 {
