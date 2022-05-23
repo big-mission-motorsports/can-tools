@@ -11,7 +11,7 @@ namespace BigMission.CanTools.TestCan
         private readonly PiCanMessageParser canParser;
         private ILogger Logger { get; }
 
-        public bool IsOpen => throw new NotImplementedException();
+        public bool IsOpen => true;
 
         public TestCanInterface(ILogger logger)
         {
@@ -42,7 +42,7 @@ namespace BigMission.CanTools.TestCan
         //  can0  00000001   [8]  94 00 4F 00 00 00 4E 00
         public void SimulateRx(string piCanMessage)
         {
-            Logger.Debug("Sending test can message: " + piCanMessage);
+            Logger.Trace("Sending test can message: " + piCanMessage);
             var cm = canParser.Process(piCanMessage);
             Received?.Invoke(cm);
         }
