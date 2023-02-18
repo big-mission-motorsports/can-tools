@@ -13,6 +13,8 @@ namespace BigMission.CanTools.TestCan
 
         public bool IsOpen => true;
 
+        public bool SilentOnCanBus { get; set; }
+
         public TestCanInterface(ILogger logger)
         {
             Logger = logger;
@@ -33,6 +35,7 @@ namespace BigMission.CanTools.TestCan
         public Task SendAsync(CanMessage message)
         {
             Logger.Info("Sent test can interface");
+            if (SilentOnCanBus) return Task.CompletedTask;
             return Task.CompletedTask;
         }
 

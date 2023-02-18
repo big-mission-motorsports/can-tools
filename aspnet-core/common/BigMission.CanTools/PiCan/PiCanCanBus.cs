@@ -19,6 +19,8 @@ namespace BigMission.CanTools.PiCan
         private readonly PiCanMessageParser canParser;
         private Thread receiveThread;
         public bool IsOpen { get; private set; }
+        public bool SilentOnCanBus { get; set; }
+
         private readonly string cmd;
         private readonly string arg;
         private readonly string bitrate;
@@ -85,6 +87,7 @@ namespace BigMission.CanTools.PiCan
 
         public async Task SendAsync(CanMessage message)
         {
+            if (SilentOnCanBus) return;
             var canIdStr = CanUtilities.InferCanIdString(message.CanId);
             var dataStr = CanUtilities.ConvertExactString(message.Data, message.DataLength);
 

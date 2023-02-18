@@ -9,6 +9,7 @@ namespace BigMission.CanTools
     public interface ICanBus
     {
         bool IsOpen { get; }
+        bool SilentOnCanBus { get; set; }
 
         /// <summary>
         /// Connects to CAN bus and starts listening.

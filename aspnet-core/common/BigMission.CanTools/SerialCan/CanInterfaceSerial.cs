@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace BigMission.CanTools.SerialCan
 {
     /// <summary>
-    /// Conencts with USB CAN bus interface with LAWICEL CAN232 Windows drivers.
+    /// Connects with USB CAN bus interface with LAWICEL CAN232 Windows drivers.
     /// To enable driver support from CANUSB, change the USB Serial Driver 
     /// in Windows Device Manager to "Load VCP" on Advanced tab.
     /// </summary>
@@ -22,7 +22,7 @@ namespace BigMission.CanTools.SerialCan
         private ILogger Logger { get; }
         private readonly StringBuilder responseBuffer = new StringBuilder();
         public bool IsOpen { get; private set; }
-
+        public bool SilentOnCanBus { get; set; }
 
         public CanInterfaceSerial(ILogger logger)
         {
@@ -94,7 +94,7 @@ namespace BigMission.CanTools.SerialCan
 
         private static CanMessage Parse(string line)
         {
-            // Make sure there is sufficent content to be valid before bothering
+            // Make sure there is sufficient content to be valid before bothering
             if (line.Length < 6)
                 return null;
 
@@ -169,6 +169,8 @@ namespace BigMission.CanTools.SerialCan
 
         public Task SendAsync(CanMessage cm)
         {
+            if (SilentOnCanBus) return Task.CompletedTask;
+
             var idstr = cm.CanId.ToString("X");
             var idTotalLen = 3;
             var messagePrefix = "t";
