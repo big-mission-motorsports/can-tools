@@ -1,5 +1,6 @@
 ﻿using BigMission.DeviceApp.Shared;
 using System;
+using System.Linq;
 using System.Text;
 
 namespace BigMission.CanTools
@@ -206,8 +207,8 @@ namespace BigMission.CanTools
         public static string ConvertExactString(ulong data, int length)
         {
             var sbData = new StringBuilder();
-            var bytes = BitConverter.GetBytes(data);
-            for (int i = length - 1; i >= 0; i--)
+            var bytes = BitConverter.GetBytes(data)[(8 - length)..8];
+            for (int i = bytes.Length - 1; i >= 0; i--)
             {
                 sbData.Append(bytes[i].ToString("X2"));
             }

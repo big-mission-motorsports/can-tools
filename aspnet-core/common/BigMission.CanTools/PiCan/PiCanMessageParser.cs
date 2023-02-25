@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 namespace BigMission.CanTools.PiCan
 {
     /// <summary>
-    /// Processes CAN Bus messsages from command line output that's
+    /// Processes CAN Bus messages from command line output that's
     /// received from pican candump command.
     /// </summary>
     public class PiCanMessageParser

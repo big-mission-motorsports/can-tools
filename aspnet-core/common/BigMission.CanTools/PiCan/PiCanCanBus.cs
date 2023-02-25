@@ -1,5 +1,4 @@
-﻿using BigMission.DeviceApp.Shared;
-using NLog;
+﻿using NLog;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -75,13 +74,13 @@ namespace BigMission.CanTools.PiCan
             {
                 // Receive command line CAN dump data
                 var cm = canParser.Process(obj);
-                Logger.Trace($"RX CANID: {cm.CanId:X}");
+                Logger?.Trace($"RX CANID: {cm.CanId:X}");
 
                 Received?.Invoke(cm);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Unable to process or send message");
+                Logger?.Error(ex, "Unable to process or send message");
             }
         }
 
