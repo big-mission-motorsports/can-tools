@@ -88,7 +88,7 @@ namespace BigMission.CanTools.PiCan
         {
             if (SilentOnCanBus) return;
             var canIdStr = CanUtilities.InferCanIdString(message.CanId);
-            var dataStr = CanUtilities.ConvertExactString(message.Data, message.DataLength);
+            var dataStr = CanUtilities.ConvertExactString(message.Data);
 
             var arg = $"{this.arg} {canIdStr}#{dataStr}";
             await shell.RunInstAsync(sendCmd, arg);

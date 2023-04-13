@@ -38,12 +38,20 @@ namespace BigMission.CanTools.PiCan
                     var dataStr = m.Groups["data"].Value;
 
                     dataStr = dataStr.Replace(" ", "");
-                    for (int i = dataBytes; i < 8; i++)
+                    //for (int i = dataBytes; i < 8; i++)
+                    //{
+                    //    dataStr += "00";
+                    //}
+
+                    //ulong data = Convert.ToUInt64(dataStr, 16);
+                    var data = new byte[dataBytes];
+                    for (int i = 0; i < dataBytes; i++)
                     {
-                        dataStr += "00";
+                        var s = dataStr[..2];
+                        dataStr = dataStr.Remove(0, 2);
+                        data[i] = Convert.ToByte(s, 16);
                     }
 
-                    ulong data = Convert.ToUInt64(dataStr, 16);
                     var cm = new CanMessage { CanId = id, Timestamp = timestamp, Data = data, DataLength = dataBytes };
                     if (idstr.Length == 3)
                     {

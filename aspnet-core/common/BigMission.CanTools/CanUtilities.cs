@@ -193,9 +193,15 @@ namespace BigMission.CanTools
             return string.Format("{0:X8}", id);
         }
 
-        public static string GetDataString(ulong data)
+        public static string GetDataString(byte[] data)
         {
-            return string.Format("{0:X16}", data);
+            var sb = new StringBuilder();
+            foreach (byte b in data)
+            {
+                sb.AppendFormat("{0:X2}", b);
+            }
+            //return string.Format("{0:X16}", data);
+            return sb.ToString();
         }
 
         /// <summary>
@@ -213,6 +219,16 @@ namespace BigMission.CanTools
                 sbData.Append(bytes[i].ToString("X2"));
             }
             return sbData.ToString();
+        }
+
+        public static string ConvertExactString(byte[] data)
+        {
+            var sb = new StringBuilder();
+            foreach(var b in data)
+            {
+                sb.AppendFormat("{0:X2}", b);
+            }
+            return sb.ToString();
         }
 
         public static CanSpeed ParseSpeed(string s)

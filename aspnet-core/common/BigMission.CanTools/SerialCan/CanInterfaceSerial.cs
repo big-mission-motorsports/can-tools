@@ -152,7 +152,8 @@ namespace BigMission.CanTools.SerialCan
             // Preserve byte order
             bytes.Reverse();
 
-            cm.Data = BitConverter.ToUInt64(bytes.ToArray());
+            //cm.Data = BitConverter.ToUInt64(bytes.ToArray());
+            cm.Data = bytes.ToArray();
             return cm;
         }
 
@@ -186,7 +187,7 @@ namespace BigMission.CanTools.SerialCan
                 idstr = "0" + idstr;
             }
 
-            var dataStr = CanUtilities.ConvertExactString(cm.Data, cm.DataLength);
+            var dataStr = CanUtilities.ConvertExactString(cm.Data);
 
             var message = $"{messagePrefix}{idstr}{cm.DataLength}{dataStr}\r";
             if (serialPort.IsOpen)
