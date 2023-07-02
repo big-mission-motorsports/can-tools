@@ -1,8 +1,6 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BigMission.CanTools.PiCan
@@ -15,9 +13,9 @@ namespace BigMission.CanTools.PiCan
         private ILogger Logger { get; }
         private Process process;
 
-        public ShellCommand(ILogger logger)
+        public ShellCommand(ILoggerFactory loggerFactory)
         {
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(GetType().Name);
         }
 
         public event Action<string> ReceivedOutput;
@@ -35,7 +33,7 @@ namespace BigMission.CanTools.PiCan
                     CreateNoWindow = true,
                 }
             };
-            Logger.Info(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
+            Logger.LogInformation(process.StartInfo.FileName + " " + process.StartInfo.Arguments);
             process.Start();
 
             while (!process.HasExited)
@@ -74,7 +72,7 @@ namespace BigMission.CanTools.PiCan
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error sending CAN message");
+                    Logger.LogError(ex, "Error sending CAN message");
                 }
             });
             //await new Task(() => { process.Start(); });

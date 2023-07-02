@@ -1,4 +1,4 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Text.RegularExpressions;
 
@@ -18,9 +18,9 @@ namespace BigMission.CanTools.PiCan
         private readonly Regex regex = new Regex(@"\s*can\d\s+(?'id'[\d\w]+)\s+\[(?'len'\d)\]\s+(?'data'[\s\d\w]{2,23})");
 
 
-        public PiCanMessageParser(ILogger logger)
+        public PiCanMessageParser(ILoggerFactory loggerFactory)
         {
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(GetType().Name);
         }
 
 
@@ -66,12 +66,12 @@ namespace BigMission.CanTools.PiCan
                 }
                 else
                 {
-                    Logger.Trace($"Error parsing: {message}");
+                    Logger.LogTrace($"Error parsing: {message}");
                 }
             }
             catch(Exception ex)
             {
-                Logger.Error(ex, "Processing CAN message failed:{0}", message);
+                Logger.LogError(ex, "Processing CAN message failed:{0}", message);
             }
             return null;
         }

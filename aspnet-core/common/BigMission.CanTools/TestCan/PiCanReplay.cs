@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog;
+using Microsoft.Extensions.Logging;
 
 namespace BigMission.CanTools.TestCan
 {
@@ -14,11 +14,11 @@ namespace BigMission.CanTools.TestCan
         public TestCanInterface CanBus { get; }
         public ILogger Logger { get; }
 
-        public PiCanReplay(string dataFile, TestCanInterface canBus, ILogger logger)
+        public PiCanReplay(string dataFile, TestCanInterface canBus, ILoggerFactory loggerFactory)
         {
             DataFile = dataFile;
             CanBus = canBus;
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(GetType().Name);
         }
 
         public async Task Start(CancellationToken cancellationToken)
@@ -45,7 +45,7 @@ namespace BigMission.CanTools.TestCan
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex, "Error replaying CAN file.");
+                    Logger.LogError(ex, "Error replaying CAN file.");
                 }
             }, cancellationToken);
         }

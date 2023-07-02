@@ -1,5 +1,5 @@
 ﻿using BigMission.CanTools.PiCan;
-using NLog;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
@@ -15,26 +15,26 @@ namespace BigMission.CanTools.TestCan
 
         public bool SilentOnCanBus { get; set; }
 
-        public TestCanInterface(ILogger logger)
+        public TestCanInterface(ILoggerFactory loggerFactory)
         {
-            Logger = logger;
-            canParser = new PiCanMessageParser(Logger);
+            Logger = loggerFactory.CreateLogger(GetType().Name);
+            canParser = new PiCanMessageParser(loggerFactory);
         }
 
         public void Close()
         {
-            Logger.Info("Closed test can interface");
+            Logger.LogInformation("Closed test can interface");
         }
 
         public int Open(string driverInterface, CanSpeed speed)
         {
-            Logger.Info("Opened test can interface");
+            Logger.LogInformation("Opened test can interface");
             return 0;
         }
 
         public Task SendAsync(CanMessage message)
         {
-            Logger.Info("Sent test can interface");
+            Logger.LogInformation("Sent test can interface");
             if (SilentOnCanBus) return Task.CompletedTask;
             return Task.CompletedTask;
         }
@@ -45,7 +45,7 @@ namespace BigMission.CanTools.TestCan
         //  can0  00000001   [8]  94 00 4F 00 00 00 4E 00
         public void SimulateRx(string piCanMessage)
         {
-            Logger.Trace("Sending test can message: " + piCanMessage);
+            Logger.LogTrace("Sending test can message: " + piCanMessage);
             var cm = canParser.Process(piCanMessage);
             Received?.Invoke(cm);
         }

@@ -1,10 +1,10 @@
-﻿using NLog;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace BigMission.CanTools.SerialCan
 {
@@ -24,9 +24,9 @@ namespace BigMission.CanTools.SerialCan
         public bool IsOpen { get; private set; }
         public bool SilentOnCanBus { get; set; }
 
-        public CanInterfaceSerial(ILogger logger)
+        public CanInterfaceSerial(ILoggerFactory loggerFactory)
         {
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(GetType().Name);
         }
 
 
@@ -39,7 +39,7 @@ namespace BigMission.CanTools.SerialCan
             }
             catch (System.IO.IOException ex)
             {
-                Logger.Warn(ex, "Unable to connect to CAN over COMM port");
+                Logger.LogWarning(ex, "Unable to connect to CAN over COMM port");
                 return -1;
             }
 
@@ -192,7 +192,7 @@ namespace BigMission.CanTools.SerialCan
             var message = $"{messagePrefix}{idstr}{cm.DataLength}{dataStr}\r";
             if (serialPort.IsOpen)
             {
-                Logger.Trace("TX:" + message);
+                Logger.LogTrace("TX:" + message);
                 serialPort.Write(message);
             }
 

@@ -1,4 +1,4 @@
-﻿using NLog;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,38 +20,40 @@ namespace BigMission.CanTools.PiCan
         public bool IsOpen { get; private set; }
         public bool SilentOnCanBus { get; set; }
 
+        private readonly ILoggerFactory loggerFactory;
         private readonly string cmd;
         private readonly string arg;
         private readonly string bitrate;
 
 
-        public PiCanCanBus(ILogger logger, string cmd, string arg, string bitrate)
+        public PiCanCanBus(ILoggerFactory loggerFactory, string cmd, string arg, string bitrate)
         {
-            Logger = logger;
+            Logger = loggerFactory.CreateLogger(GetType().Name);
+            this.loggerFactory = loggerFactory;
             this.cmd = cmd;
             this.arg = arg;
             this.bitrate = bitrate;
             sendCmd = cmd.Replace("candump", "cansend");
-            canParser = new PiCanMessageParser(Logger);
+            canParser = new PiCanMessageParser(loggerFactory);
         }
 
 
         public int Open(string driverInterface, CanSpeed speed)
         {
             // Run a shell interface to pican tools
-            shell = new ShellCommand(Logger);
+            shell = new ShellCommand(loggerFactory);
 
             Close();
             Thread.Sleep(1000);
             LinkUp();
 
-            Logger.Debug($"CAN link started");
+            Logger.LogDebug($"CAN link started");
 
             shell.ReceivedOutput += CanShell_ReceivedOutput;
             receiveThread = new Thread(DoReceive) { IsBackground = true };
             receiveThread.Start();
             IsOpen = true;
-            Logger.Debug($"Completed pican initialization.");
+            Logger.LogDebug($"Completed pican initialization.");
             return 0;
         }
 
@@ -59,12 +61,12 @@ namespace BigMission.CanTools.PiCan
         {
             try
             {
-                Logger.Debug($"Starting pican candump...");
+                Logger.LogDebug($"Starting pican candump...");
                 shell.Run(cmd, arg);
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error receiving candump output");
+                Logger.LogError(ex, "Error receiving candump output");
             }
         }
 
@@ -74,13 +76,13 @@ namespace BigMission.CanTools.PiCan
             {
                 // Receive command line CAN dump data
                 var cm = canParser.Process(obj);
-                Logger?.Trace($"RX CANID: {cm.CanId:X}");
+                Logger?.LogTrace($"RX CANID: {cm.CanId:X}");
 
                 Received?.Invoke(cm);
             }
             catch (Exception ex)
             {
-                Logger?.Error(ex, "Unable to process or send message");
+                Logger?.LogError(ex, "Unable to process or send message");
             }
         }
 
@@ -92,31 +94,31 @@ namespace BigMission.CanTools.PiCan
 
             var arg = $"{this.arg} {canIdStr}#{dataStr}";
             await shell.RunInstAsync(sendCmd, arg);
-            Logger.Trace($"TX: {arg}");
+            Logger.LogTrace($"TX: {arg}");
         }
 
         private void LinkUp()
         {
-            var cmd = new ShellCommand(Logger);
+            var cmd = new ShellCommand(loggerFactory);
             try
             {
-                Logger.Debug("Turning link up");
+                Logger.LogDebug("Turning link up");
                 var speed = CanUtilities.ParseSpeed(bitrate);
-                Logger.Debug($"Start up CAN link: {speed}/{bitrate}...");
+                Logger.LogDebug($"Start up CAN link: {speed}/{bitrate}...");
                 cmd.Run("sudo", $"/sbin/ip link set {arg} up type can bitrate {bitrate}");
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error starting pican link");
+                Logger.LogError(ex, "Error starting pican link");
             }
         }
 
         public void Close()
         {
-            var cmd = new ShellCommand(Logger);
+            var cmd = new ShellCommand(loggerFactory);
             try
             {
-                Logger.Debug("Turning off can link");
+                Logger.LogDebug("Turning off can link");
                 cmd.Run("sudo", $"/sbin/ip link set {arg} down");
 
                 if (receiveThread != null)
@@ -130,7 +132,7 @@ namespace BigMission.CanTools.PiCan
             }
             catch (Exception ex)
             {
-                Logger.Error(ex, "Error closing pican link.");
+                Logger.LogError(ex, "Error closing pican link.");
             }
         }
     }
