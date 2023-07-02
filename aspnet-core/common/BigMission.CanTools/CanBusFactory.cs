@@ -1,7 +1,6 @@
 ﻿using BigMission.CanTools.PiCan;
 using BigMission.CanTools.SerialCan;
 using Microsoft.Extensions.Logging;
-using NLog;
 using System;
 using System.Runtime.InteropServices;
 
