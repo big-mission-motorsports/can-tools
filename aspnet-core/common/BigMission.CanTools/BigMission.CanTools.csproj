@@ -9,12 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="BigMission.CommandTools" Version="2.0.0-CI-20230703-001026" />
     <PackageReference Include="BigMission.DeviceApp.Shared" Version="2.0.0-CI-20230702-232123" />
     <PackageReference Include="System.IO.Ports" Version="5.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\BigMission.CommandTools\BigMission.CommandTools.csproj" />
   </ItemGroup>
 
 </Project>
