@@ -1,2 +1,2 @@
 # Introduction 
-Utilities for accesing CAN Bus using PiCan or Serial Windows COM.
+Utilities for accessing CAN Bus using PiCan or Serial Windows COM.

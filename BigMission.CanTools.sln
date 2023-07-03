@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.33808.371
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigMission.CanTools", "BigMission.CanTools\BigMission.CanTools.csproj", "{566B7488-CC49-454D-B3D2-3FF5E204EE4B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DCE51B30-A25D-4540-8940-9D4A3EC9C53E}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		nuget.config = nuget.config
+		pipeline-ci.yml = pipeline-ci.yml
+		pipeline-publish.yml = pipeline-publish.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{566B7488-CC49-454D-B3D2-3FF5E204EE4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{566B7488-CC49-454D-B3D2-3FF5E204EE4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{566B7488-CC49-454D-B3D2-3FF5E204EE4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{566B7488-CC49-454D-B3D2-3FF5E204EE4B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {98E2CAEB-8378-4122-A08B-14E129C38309}
+	EndGlobalSection
+EndGlobal

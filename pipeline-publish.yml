@@ -1,0 +1,42 @@
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: 'Release'
+  Major: '2'
+  Minor: '0'
+  Patch: '0'
+
+steps:
+# Required for custom access to Artifacts
+# https://stackoverflow.com/questions/74597803/azure-pipeline-consuming-azure-artifact-nuget-nu1301-unable-to-load-the-servi
+- task: PowerShell@2
+  displayName: "Install Artifacts Provider"
+  inputs:
+    targetType: 'inline'
+    script: |
+      Write-Host "Install Artifacts Provider"
+      Invoke-Expression "& { $(irm https://aka.ms/install-artifacts-credprovider.ps1) } -AddNetfx"
+
+# Check we can authenticate
+- task: NuGetAuthenticate@1
+  displayName: "Nuget Authentication"
+  
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/*.csproj'
+    includeSymbols: true
+    versioningScheme: byPrereleaseNumber
+    majorVersion: '$(Major)'
+    minorVersion: '$(Minor)'
+    patchVersion: '$(Patch)'
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '48c0f1de-d778-40c9-acef-b309ace7089f'

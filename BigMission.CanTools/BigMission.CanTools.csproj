@@ -1,17 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Title>CanTools</Title>
+		<Version>2.0.0.0</Version>
+		<Authors>Brian Griggs</Authors>
+		<Company>Big Mission Motorsports, LLC</Company>
+		<Product>Red Mist</Product>
+		<Description>Utilities for accessing CAN Bus using PiCan or Serial Windows COM</Description>
+		<Copyright>2023</Copyright>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://dev.azure.com/bigmission/RedMist/_git/CanTools</RepositoryUrl>
+		<IncludeSymbols>True</IncludeSymbols>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="C:\Users\brian\.nuget\packages\nlog.config\4.7.2\contentFiles\any\any\NLog.config" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Remove="C:\Users\brian\.nuget\packages\nlog.config\4.7.2\contentFiles\any\any\NLog.config" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="BigMission.CommandTools" Version="2.0.0-CI-20230703-001026" />
-    <PackageReference Include="BigMission.DeviceApp.Shared" Version="2.0.0-CI-20230702-232123" />
-    <PackageReference Include="System.IO.Ports" Version="5.0.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="BigMission.CommandTools" Version="2.0.0-CI-20230703-001026" />
+		<PackageReference Include="BigMission.DeviceApp.Shared" Version="2.0.0-CI-20230702-232123" />
+		<PackageReference Include="System.IO.Ports" Version="5.0.0" />
+	</ItemGroup>
 
 </Project>
