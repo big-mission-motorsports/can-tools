@@ -23,8 +23,8 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build BigMission.CommandTools/BigMission.CommandTools.csproj --no-restore --configuration Release
+        run: dotnet build BigMission.CanTools/BigMission.CanTools.csproj --no-restore --configuration Release
       - name: Create the package
-        run: dotnet pack BigMission.CommandTools/BigMission.CommandTools.csproj --configuration Release
+        run: dotnet pack BigMission.CanTools/BigMission.CanTools.csproj --configuration Release
       - name: Publish the package to Nuget
-        run: dotnet nuget push BigMission.CommandTools/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_TOKEN}} --skip-duplicate
+        run: dotnet nuget push BigMission.CanTools/bin/Release/*.nupkg -s https://api.nuget.org/v3/index.json --api-key ${{secrets.NUGET_TOKEN}} --skip-duplicate
