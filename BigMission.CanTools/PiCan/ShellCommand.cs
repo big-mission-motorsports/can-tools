@@ -89,5 +89,7 @@ public class ShellCommand : IDisposable
             }
         }
         catch { }
+
+        GC.SuppressFinalize(this);
     }
 }

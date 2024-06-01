@@ -17,7 +17,7 @@ public interface ICanBus
     /// <param name="driverInterface">e.g. can0 or COM3</param>
     /// <param name="speed"></param>
     /// <returns></returns>
-    int Open(string driverInterface, CanSpeed speed);
+    Task<int> OpenAync(string driverInterface, CanSpeed speed);
 
     /// <summary>
     /// Triggered when there is a new message received on the CAN Bus.

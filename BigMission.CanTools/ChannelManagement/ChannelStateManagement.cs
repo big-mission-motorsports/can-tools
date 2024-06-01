@@ -10,8 +10,8 @@ namespace BigMission.CanTools.ChannelManagement;
 /// </summary>
 public class ChannelStateManagement : IChannelStateManagement
 {
-    private readonly Dictionary<int, ChannelStatusDto> channels = new Dictionary<int, ChannelStatusDto>();
-    private readonly HashSet<int> dirtyChannels = new HashSet<int>();
+    private readonly Dictionary<int, ChannelStatusDto> channels = [];
+    private readonly HashSet<int> dirtyChannels = [];
 
     public void UpdateChannelValues(ChannelStatusDto[] values)
     {
@@ -43,7 +43,7 @@ public class ChannelStateManagement : IChannelStateManagement
             }
             dirtyChannels.Clear();
         }
-        return cvl.ToArray();
+        return [.. cvl];
     }
 
     public ChannelStatusDto[] ClaimAllChannel()
@@ -51,7 +51,7 @@ public class ChannelStateManagement : IChannelStateManagement
         ChannelStatusDto[] values;
         lock (this)
         {
-            values = channels.Values.ToArray();
+            values = [.. channels.Values];
             dirtyChannels.Clear();
         }
         return values;

@@ -15,12 +15,11 @@ namespace BigMission.CanTools.SerialCan;
 /// </summary>
 public class CanInterfaceSerial : ICanBus
 {
-    private string CommPort { get; }
     private const int COM_SPEED = 57600;
     private SerialPort serialPort;
     public event Action<CanMessage> Received;
     private ILogger Logger { get; }
-    private readonly StringBuilder responseBuffer = new StringBuilder();
+    private readonly StringBuilder responseBuffer = new();
     public bool IsOpen { get; private set; }
     public bool SilentOnCanBus { get; set; }
 
@@ -30,7 +29,7 @@ public class CanInterfaceSerial : ICanBus
     }
 
 
-    public int Open(string driverInterface, CanSpeed speed)
+    public Task<int> OpenAync(string driverInterface, CanSpeed speed)
     {
         serialPort = new SerialPort(driverInterface, COM_SPEED);
         try
@@ -40,7 +39,7 @@ public class CanInterfaceSerial : ICanBus
         catch (System.IO.IOException ex)
         {
             Logger.LogWarning(ex, "Unable to connect to CAN over COMM port");
-            return -1;
+            return Task.FromResult(-1);
         }
 
         if (serialPort.IsOpen)
@@ -49,11 +48,11 @@ public class CanInterfaceSerial : ICanBus
             serialPort.Write($"S{(int)speed}\r");
             serialPort.Write("O\r");
             IsOpen = true;
-            return 0;
+            return Task.FromResult(0);
         }
         else
         {
-            return -1;
+            return Task.FromResult(-1);
         }
     }
 
@@ -153,7 +152,7 @@ public class CanInterfaceSerial : ICanBus
         bytes.Reverse();
 
         //cm.Data = BitConverter.ToUInt64(bytes.ToArray());
-        cm.Data = bytes.ToArray();
+        cm.Data = [.. bytes];
         return cm;
     }
 

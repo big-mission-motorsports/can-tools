@@ -21,7 +21,7 @@ public class CanBusFactory
         {
             logger.LogTrace($"File exists: ${cmd}");
             canBus = new PiCanCanBus(loggerFactory, cmd, arg, bitrate);
-            canBus.Open(arg, speed);
+            canBus.OpenAync(arg, speed);
         }
         // Use serial port on windows
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -30,7 +30,7 @@ public class CanBusFactory
             canBus = new CanInterfaceSerial(loggerFactory);
             try
             {
-                var result = canBus.Open("COM3", speed);
+                var result = canBus.OpenAync("COM3", speed);
                 //if (result != 0)
                 //{
                 //    logger.Trace($"Serial driver failed. Reverting to pican.");

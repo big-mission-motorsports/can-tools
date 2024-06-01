@@ -38,13 +38,13 @@ public class PiCanCanBus : ICanBus
     }
 
 
-    public int Open(string driverInterface, CanSpeed speed)
+    public async Task<int> OpenAync(string driverInterface, CanSpeed speed)
     {
         // Run a shell interface to pican tools
         shell = new ShellCommand(loggerFactory);
 
         Close();
-        Thread.Sleep(1000);
+        await Task.Delay(1000);
         LinkUp();
 
         Logger.LogDebug($"CAN link started");
@@ -104,7 +104,7 @@ public class PiCanCanBus : ICanBus
         {
             Logger.LogDebug("Turning link up");
             var speed = CanUtilities.ParseSpeed(bitrate);
-            Logger.LogDebug($"Start up CAN link: {speed}/{bitrate}...");
+            Logger.LogDebug("Start up CAN link: {Speed}/{Bitrate}...", speed, bitrate);
             cmd.Run("sudo", $"/sbin/ip link set {arg} up type can bitrate {bitrate}");
         }
         catch (Exception ex)
@@ -124,7 +124,6 @@ public class PiCanCanBus : ICanBus
             if (receiveThread != null)
             {
                 shell.Dispose();
-                receiveThread.Abort();
                 receiveThread = null;
             }
 

@@ -8,14 +8,14 @@ namespace BigMission.CanTools.PiCan;
 /// Processes CAN Bus messages from command line output that's
 /// received from pican candump command.
 /// </summary>
-public class PiCanMessageParser
+public partial class PiCanMessageParser
 {
     private ILogger Logger { get; }
 
     //  can0  001   [8]  94 00 4F 00 00 00 4E 00
     //  can0  001   [6]  94 00 4F 00 00 00 4E
     //  can0  00000001   [8]  94 00 4F 00 00 00 4E 00
-    private readonly Regex regex = new Regex(@"\s*can\d\s+(?'id'[\d\w]+)\s+\[(?'len'\d)\]\s+(?'data'[\s\d\w]{2,23})");
+    private readonly Regex regex = CanOutputRegex();
 
 
     public PiCanMessageParser(ILoggerFactory loggerFactory)
@@ -76,5 +76,6 @@ public class PiCanMessageParser
         return null;
     }
 
-
+    [GeneratedRegex(@"\s*can\d\s+(?'id'[\d\w]+)\s+\[(?'len'\d)\]\s+(?'data'[\s\d\w]{2,23})")]
+    private static partial Regex CanOutputRegex();
 }

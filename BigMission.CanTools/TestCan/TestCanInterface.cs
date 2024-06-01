@@ -26,10 +26,10 @@ public class TestCanInterface : ICanBus
         Logger.LogInformation("Closed test can interface");
     }
 
-    public int Open(string driverInterface, CanSpeed speed)
+    public Task<int> OpenAync(string driverInterface, CanSpeed speed)
     {
         Logger.LogInformation("Opened test can interface");
-        return 0;
+        return Task.FromResult(0);
     }
 
     public Task SendAsync(CanMessage message)
