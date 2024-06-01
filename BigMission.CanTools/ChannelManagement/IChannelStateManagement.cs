@@ -1,13 +1,12 @@
-﻿using BigMission.DeviceApp.Shared;
+﻿using BigMission.Drivesync.Shared;
 using System.Collections.Generic;
 
-namespace BigMission.CanTools.ChannelManagement
+namespace BigMission.CanTools.ChannelManagement;
+
+public interface IChannelStateManagement
 {
-    public interface IChannelStateManagement
-    {
-        ChannelStatusDto[] ClaimAllChannel();
-        ChannelStatusDto[] ClaimDirtyChannels();
-        Dictionary<int, ChannelStatusDto> GetChannelLookupPassive();
-        void UpdateChannelValues(ChannelStatusDto[] values);
-    }
+    ChannelStatusDto[] ClaimAllChannel();
+    ChannelStatusDto[] ClaimDirtyChannels();
+    Dictionary<int, ChannelStatusDto> GetChannelLookupPassive();
+    void UpdateChannelValues(ChannelStatusDto[] values);
 }
